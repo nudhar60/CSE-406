@@ -1,0 +1,50 @@
+#include <iostream>
+#include <vector>
+#include <cmath>
+#include <climits>
+
+using namespace std;
+
+void sstf(vector<int>& requests, int head) {
+    int total_seek = 0;
+    vector<int> seek_sequence;
+
+    while (!requests.empty()) {
+        int min_distance = INT_MAX;
+        int nearest_request = -1;
+        int index = -1;
+
+        for (int i = 0; i < requests.size(); i++) {
+            int distance = abs(requests[i] - head);
+            if (distance < min_distance) {
+                min_distance = distance;
+                nearest_request = requests[i];
+                index = i;
+            }
+        }
+
+
+        total_seek += min_distance;
+        head = nearest_request;
+        seek_sequence.push_back(nearest_request);
+
+        requests.erase(requests.begin() + index);
+    }
+
+    cout << "Seek Sequence: ";
+    for (int req : seek_sequence) {
+        cout << req << " ";
+    }
+    cout << endl;
+    cout << "Total Seek Time: " << total_seek << endl;
+}
+
+int main() {
+    vector<int> requests = {11, 34, 41, 50, 52, 69, 70, 114};
+    int head = 50;
+
+    sstf(requests, head);
+
+    return 0;
+}
+
