@@ -1,0 +1,74 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cmath>
+
+using namespace std;
+
+void scan(vector<int>& requests, int head, int disk_size, string direction) {
+    int total_seek = 0;
+    vector<int> seek_sequence;
+    vector<int> left, right;
+    for (int request : requests) {
+        if (request < head)
+            left.push_back(request);
+        else
+            right.push_back(request);
+    }
+
+    sort(left.rbegin(), left.rend());
+    sort(right.begin(), right.end());
+
+    if (direction == "left") {
+        for (int r : left) {
+            total_seek += abs(head - r);
+            head = r;
+            seek_sequence.push_back(r);
+        }
+        total_seek += head;
+        head = 0;
+        seek_sequence.push_back(0);
+
+        for (int r : right) {
+            total_seek += abs(head - r);
+            head = r;
+            seek_sequence.push_back(r);
+        }
+    }
+    else if (direction == "right") {
+        for (int r : right) {
+            total_seek += abs(head - r);
+            head = r;
+            seek_sequence.push_back(r);
+        }
+        total_seek += (disk_size - 1 - head);
+        head = disk_size - 1;
+        seek_sequence.push_back(disk_size - 1);
+
+        for (int r : left) {
+            total_seek += abs(head - r);
+            head = r;
+            seek_sequence.push_back(r);
+        }
+    }
+
+    cout << "Seek Sequence: ";
+    for (int r : seek_sequence) {
+        cout << r << " ";
+    }
+    cout << endl;
+
+    cout << "Total Seek Time: " << total_seek << endl;
+}
+
+int main() {
+    vector<int> requests = {11, 34, 41, 50, 52, 69, 70, 114};
+    int head = 50;
+    int disk_size = 200;
+    string direction = "left";
+
+    scan(requests, head, disk_size, direction);
+
+    return 0;
+}
+
