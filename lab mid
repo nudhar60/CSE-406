@@ -1,0 +1,47 @@
+#Round robin
+n = int(input("Enter number of processes: "))
+pname = []
+arrival = []
+burst = []
+
+
+for i in range(n):
+    pname.append(input("Enter process name: "))
+    arrival.append(int(input("Enter arrival time: ")))
+    burst.append(int(input("Enter burst time: ")))
+
+
+quantum = int(input("Enter time quantum: "))
+
+
+remaining = burst[:]
+complete = [0] * n
+ct = [0] * n
+time = 0
+done = 0
+queue = []
+visited = [False] * n
+
+
+while done < n:
+    for i in range(n):
+        if arrival[i] <= time and not visited[i] and remaining[i] > 0:
+            queue.append(i)
+            visited[i] = True
+
+
+    if not queue:
+        time += 1
+        continue
+
+
+    current = queue.pop(0)
+
+
+    if remaining[current] > quantum:
+        time += quantum
+        remaining[current] -= quantum
+    else:
+        time += remaining[current]
+        ct[current] = time
+        remaining[current] = 0
