@@ -1,0 +1,81 @@
+#include <iostream>
+#include <vector>
+#include <algorithm>
+#include <cstdlib>
+#include <string>
+using namespace std;
+
+void c_scan(vector<int> queue, int head, int disk_size, string direction) {
+    sort(queue.begin(), queue.end());
+
+    vector<int> left, right;
+    for (int request : queue) {
+        if (request < head)
+            left.push_back(request);
+        else
+            right.push_back(request);
+    }
+
+    vector<int> movement_order;
+    int total_distance = 0;
+    int previous_head = head;
+
+    movement_order.push_back(head);
+
+    if (direction == "left") {
+        for (int i = left.size() - 1; i >= 0; i--) {
+            total_distance += abs(previous_head - left[i]);
+            previous_head = left[i];
+            movement_order.push_back(left[i]);
+        }
+        if (!right.empty()) {
+            total_distance += previous_head;          
+            previous_head = 0;
+            total_distance += (disk_size - 1 - previous_head); 
+            previous_head = disk_size - 1;
+            for (int i = right.size() - 1; i >= 0; i--) {
+                total_distance += abs(previous_head - right[i]);
+                previous_head = right[i];
+                movement_order.push_back(right[i]);
+            }
+        }
+    } else if (direction == "right") {
+        for (int i = 0; i < right.size(); i++) {
+            total_distance += abs(previous_head - right[i]);
+            previous_head = right[i];
+            movement_order.push_back(right[i]);
+        }
+        if (!left.empty()) {
+            total_distance += (disk_size - 1 - previous_head); 
+            previous_head = disk_size - 1;
+            total_distance += previous_head; 
+            previous_head = 0;
+            for (int i = 0; i < left.size(); i++) {
+                total_distance += abs(previous_head - left[i]);
+                previous_head = left[i];
+                movement_order.push_back(left[i]);
+            }
+        }
+    }
+
+    cout << "Path: ";
+    for (int i = 0; i < movement_order.size(); i++) {
+        cout << movement_order[i];
+        if (i != movement_order.size() - 1)
+            cout << " -> ";
+    }
+    cout << endl;
+
+    cout << "Total distance: " << total_distance << " cylinders" << endl;
+}
+
+int main() {
+    vector<int> queue = {176, 79, 64, 90, 21, 39};
+    int head = 50;
+    int disk_size = 200;
+    string direction = "left";
+
+    c_scan(queue, head, disk_size, direction);
+
+    return 0;
+}
