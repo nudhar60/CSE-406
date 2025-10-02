@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+#include <deque>
+#include <iomanip>
+using namespace std;
+
+int main() {
+    int frame_size, num_pages;
+    cout << "Enter number of frames: ";
+    cin >> frame_size;
+    cout << "Enter number of pages: ";
+    cin >> num_pages;
+
+    vector<int> pages(num_pages);
+    cout << "Enter page reference string: ";
+    for (int i = 0; i < num_pages; i++) {
+        cin >> pages[i];
+    }
+
+    deque<int> frames;
+    int page_faults = 0;
+    int page_hits = 0;
+
+    cout << "\nPage | Frames\t | Status\n";
+    cout << "-----------------------------\n";
+
+    for (int page : pages) {
+        bool found = false;
+        // check if page is in frames
+        for (int frame : frames) {
+            if (frame == page) {
+                found = true;
+                break;
+            }
+        }
+
+        cout << setw(4) << page << " | [ ";
+
+        if (found) {
+            for (int frame : frames) cout << frame << " ";
+            cout << "] HIT\n";
+            page_hits++;
+        } else {
+            page_faults++;
+            if ((int)frames.size() < frame_size) {
+                frames.push_back(page);
+            } else {
+                frames.pop_front();      // remove oldest
+                frames.push_back(page);  // add new page
+            }
+            for (int frame : frames) cout << frame << " ";
+            cout << "] MISS\n";
+        }
+    }
+
+    cout << "\nResults:\n";
+    cout << "Page Faults: " << page_faults << endl;
+    cout << "Page Hits: " << page_hits << endl;
+    double hit_rate = (double)page_hits / num_pages * 100.0;
+    cout << "Hit Rate: " << fixed << setprecision(2) << hit_rate << "%" << endl;
+
+    return 0;
+}
